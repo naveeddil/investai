@@ -96,7 +96,10 @@ class PublicPageControllerTest extends TestCase
 
     public function test_current_navigation_link_is_identified_and_visually_active(): void
     {
-        Page::factory()->published()->create(['slug' => 'about', 'title' => 'About InvestAI']);
+        Page::query()->updateOrCreate(
+            ['slug' => 'about'],
+            Page::factory()->published()->make(['slug' => 'about', 'title' => 'About InvestAI'])->toArray(),
+        );
 
         $response = $this->get('/about');
 
