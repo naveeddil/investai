@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      seed_consultancy_content:
+        description: Run ConsultancyContentSeeder (resets the consultancy pages, overwriting CMS edits to them)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -17,7 +22,9 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: staging
-    timeout-minutes: 45
+    timeout-minutes: 30
+    env:
+      STAGING_URL: ${{ vars.STAGING_URL || 'https://staging.investai.business' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -67,21 +74,28 @@ jobs:
           test ! -e artifacts/ftps-release/.env
           test ! -e artifacts/ftps-release/storage
 
+      # Uploading ~17,000 files one by one over FTPS takes longer than the job
+      # timeout, so the release goes up as one archive that a one-time hook
+      # extracts on the server.
+      - name: Package the release and deployment hook
+        run: |
+          DEPLOY_ID="deploy-$(openssl rand -hex 16)"
+          DEPLOY_TOKEN="$(openssl rand -hex 32)"
+          echo "::add-mask::$DEPLOY_TOKEN"
+          TOKEN_SHA256="$(printf '%s' "$DEPLOY_TOKEN" | sha256sum | cut -d' ' -f1)"
+          (cd artifacts/ftps-release && zip -qr -X "../$DEPLOY_ID.zip" .)
+          sed -e "s/__DEPLOY_ID__/$DEPLOY_ID/" -e "s/__DEPLOY_TOKEN_SHA256__/$TOKEN_SHA256/" \
+            scripts/deploy-hook.php > "artifacts/$DEPLOY_ID.php"
+          php -l "artifacts/$DEPLOY_ID.php"
+          ls -lh "artifacts/$DEPLOY_ID.zip"
+          echo "DEPLOY_ID=$DEPLOY_ID" >> "$GITHUB_ENV"
+          echo "DEPLOY_TOKEN=$DEPLOY_TOKEN" >> "$GITHUB_ENV"
+
       - name: Install FTPS client
         run: |
           sudo apt-get update
           sudo apt-get install --yes lftp
-
-      - name: Upload to the staging FTP account root
-        env:
-          FTP_HOST: ${{ secrets.STAGING_FTP_HOST }}
-          FTP_USERNAME: ${{ secrets.STAGING_FTP_USERNAME }}
-          LFTP_PASSWORD: ${{ secrets.STAGING_FTP_PASSWORD }}
-        run: |
-          : "${FTP_HOST:?Add the STAGING_FTP_HOST repository secret}"
-          : "${FTP_USERNAME:?Add the STAGING_FTP_USERNAME repository secret}"
-          : "${LFTP_PASSWORD:?Add the STAGING_FTP_PASSWORD repository secret}"
-          lftp --env-password --user "$FTP_USERNAME" -p 21 "ftp://$FTP_HOST" <<'LFTP'
+          cat > ~/.lftprc <<'LFTPRC'
           set cmd:fail-exit yes
           set ftp:passive-mode yes
           set ftp:sync-mode yes
@@ -95,21 +109,60 @@ jobs:
           set net:reconnect-interval-base 5
           set xfer:timeout 120
           set xfer:use-temp-file yes
+          LFTPRC
+
+      - name: Upload the release archive and hook
+        env:
+          FTP_HOST: ${{ secrets.STAGING_FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.STAGING_FTP_USERNAME }}
+          LFTP_PASSWORD: ${{ secrets.STAGING_FTP_PASSWORD }}
+        run: |
+          : "${FTP_HOST:?Add the STAGING_FTP_HOST repository secret}"
+          : "${FTP_USERNAME:?Add the STAGING_FTP_USERNAME repository secret}"
+          : "${LFTP_PASSWORD:?Add the STAGING_FTP_PASSWORD repository secret}"
+          lftp --env-password --user "$FTP_USERNAME" -p 21 "ftp://$FTP_HOST" <<LFTP
           cd /
           cls -d app bootstrap public storage vendor
-          mirror --reverse --verbose=3 --no-perms --overwrite --max-errors=1 --parallel=1 artifacts/ftps-release/ /
+          put -O / artifacts/$DEPLOY_ID.zip
+          put -O /public artifacts/$DEPLOY_ID.php
           bye
           LFTP
 
-      - name: Report deployment limitations
+      - name: Install the release and run Laravel commands
+        env:
+          SEED: ${{ inputs.seed_consultancy_content && '1' || '0' }}
+        run: |
+          status=0
+          curl --silent --show-error --fail-with-body --max-time 900 \
+            -X POST -H "X-Deploy-Token: $DEPLOY_TOKEN" --data "seed=$SEED" \
+            -o hook-output.txt "$STAGING_URL/$DEPLOY_ID.php" || status=$?
+          cat hook-output.txt
+          test "$status" -eq 0
+          grep -qx 'DEPLOYMENT COMPLETE' hook-output.txt
+
+      - name: Check the staging website responds
+        run: curl --silent --show-error --fail --max-time 60 -o /dev/null -w 'HTTP %{http_code}\n' "$STAGING_URL/"
+
+      - name: Remove leftover deployment files
+        if: always() && env.DEPLOY_ID != ''
+        env:
+          FTP_HOST: ${{ secrets.STAGING_FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.STAGING_FTP_USERNAME }}
+          LFTP_PASSWORD: ${{ secrets.STAGING_FTP_PASSWORD }}
+        run: |
+          lftp --env-password --user "$FTP_USERNAME" -p 21 "ftp://$FTP_HOST" <<LFTP
+          set cmd:fail-exit no
+          rm -f /$DEPLOY_ID.zip
+          rm -f /public/$DEPLOY_ID.php
+          bye
+          LFTP
+
+      - name: Report deployment
         run: |
           cat >> "$GITHUB_STEP_SUMMARY" <<'SUMMARY'
-          Uploaded staging files using explicit FTPS on port 21.
+          Uploaded the staging release as one archive over explicit FTPS (port 21) and installed it with a one-time hook.
 
-          The FTP account root maps to /home/investai/staging.investai.business.
-          Server .env, storage, bootstrap/cache, root .htaccess and PHP settings were preserved.
-          Remote-only files were not deleted. This upload is not an atomic release.
-
-          FTPS cannot execute PHP: database migrations and Laravel cache refreshes have NOT run.
-          Use cPanel to run the required post-deployment commands, then verify the staging website.
+          app, config, database, resources, routes and vendor were replaced; bootstrap, public and root files were overwritten.
+          Server .env, storage, the application-root .htaccess and public/.user.ini were preserved.
+          `migrate --force` and `optimize:clear` ran on the server.
           SUMMARY
