@@ -26,6 +26,15 @@ class AdminAccessTest extends TestCase
         $this->actingAs($user)->get('/admin/pages')->assertOk();
     }
 
+    public function test_admin_header_links_to_the_public_website(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get('/admin')
+            ->assertOk()
+            ->assertSee('Visit website')
+            ->assertSee('href="'.url('/').'"', false);
+    }
+
     public function test_deactivated_user_cannot_access_admin_panel(): void
     {
         $user = User::factory()->make(['status' => UserStatus::Deactivated]);
