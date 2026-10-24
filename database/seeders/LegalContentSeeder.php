@@ -1,0 +1,101 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Enums\PageStatus;
+use App\Models\Page;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
+
+class LegalContentSeeder extends Seeder
+{
+    public function run(): void
+    {
+        foreach ($this->pages() as $slug => $data) {
+            Page::query()->updateOrCreate(['slug' => $slug], [
+                ...$data,
+                'blocks' => collect($data['blocks'])->map(fn (array $block): array => [
+                    'type' => $block['type'],
+                    'data' => Arr::except($block, 'type'),
+                ])->all(),
+                'status' => PageStatus::Published,
+                'is_system_page' => true,
+                'deletion_protected' => true,
+                'show_in_footer' => true,
+                'index_by_search_engines' => true,
+                'robots_follow' => true,
+                'published_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function pages(): array
+    {
+        return [
+            'privacy' => [
+                'title' => 'Privacy Policy',
+                'description' => 'How InvestAI collects, uses, protects and retains personal information.',
+                'page_type' => 'legal',
+                'seo_title' => 'Privacy Policy | InvestAI',
+                'seo_description' => 'Understand what personal information InvestAI collects, why it is used, how it is protected and the choices available to you.',
+                'blocks' => [
+                    ['type' => 'hero', 'size' => 'compact', 'eyebrow' => 'Privacy policy', 'heading' => 'Your information deserves careful handling.', 'text' => 'This policy explains the personal information InvestAI may collect through this website, why we use it and the choices available to you. Last updated 24 October 2026.', 'image' => '/images/editorial/reflected-architecture.jpg', 'image_alt' => 'Reflective architecture representing privacy and controlled access', 'background' => 'dark'],
+                    ['type' => 'rich_text', 'heading' => 'Who this policy covers', 'text' => "This policy applies when you browse the InvestAI website, request a consultation, contact us, suggest a blog topic or otherwise communicate with us. InvestAI is responsible for deciding how personal information collected through these interactions is used.\n\nPlease provide only the information needed for your enquiry. Do not send account credentials, payment-card details, full investment statements, special-category information or confidential business files through a website form. If sensitive information becomes necessary for an engagement, we will agree an appropriate channel and handling arrangements first.", 'background' => 'light'],
+                    ['type' => 'feature_cards', 'heading' => 'What we collect and why.', 'intro' => 'We aim to collect the minimum information needed for a clear purpose.', 'items' => [
+                        ['icon' => 'users', 'heading' => 'Enquiry details', 'text' => 'Your name, email, phone number, company, preferred contact method and the message you choose to send, so we can respond and manage the relationship.'],
+                        ['icon' => 'document', 'heading' => 'Consultation context', 'text' => 'The topic and general context you provide so we can prepare for a conversation. Please keep sensitive financial details out of the initial form.'],
+                        ['icon' => 'layers', 'heading' => 'Technical information', 'text' => 'Basic server logs, device or browser information, requested pages and security events needed to operate, protect and troubleshoot the website.'],
+                    ], 'background' => 'surface'],
+                    ['type' => 'rich_text', 'heading' => 'How and when we use information', 'text' => "We use personal information to answer enquiries, arrange consultations, deliver requested services, maintain records, secure the website, prevent misuse and meet legal or regulatory obligations. Depending on the circumstances, the legal basis may be your consent, steps requested before entering a contract, performance of a contract, compliance with law or our legitimate interests in operating and protecting InvestAI.\n\nWe do not sell personal information. We may use carefully selected hosting, email, security or professional-service providers where needed to operate the business. They should receive only the information necessary for their role and be subject to appropriate obligations. If information is processed outside the United Kingdom, we will consider the safeguards required by applicable data-protection law.\n\nAI tools are not given confidential or sensitive personal information through public consumer services. Where an approved AI-enabled tool supports an engagement, its purpose, information boundaries and human-review arrangements will be agreed as appropriate.", 'background' => 'light'],
+                    ['type' => 'split_content', 'eyebrow' => 'Protection and retention', 'heading' => 'Keep only what is needed, for no longer than needed.', 'text' => 'We use proportionate technical and organisational safeguards, restrict access and review retention according to the purpose, sensitivity and any legal requirement. No internet service can promise absolute security, so please contact us promptly if you believe information has been sent or accessed incorrectly.', 'image' => '/images/editorial/glass-architecture.jpg', 'image_alt' => 'Structured glass building representing layered information safeguards', 'image_side' => 'right', 'points' => [['text' => 'Access limited according to role and need'], ['text' => 'Website forms used for introductory information only'], ['text' => 'Records reviewed and deleted or anonymised when no longer needed'], ['text' => 'Service providers assessed according to the information involved']], 'background' => 'surface'],
+                    ['type' => 'rich_text', 'heading' => 'Your choices and rights', 'text' => "Depending on the law that applies, you may have rights to ask for access to your personal information, correction, deletion, restriction, objection, portability or withdrawal of consent. These rights are not absolute and may be subject to legal exceptions. We may need to verify identity before responding.\n\nThe website uses essential technologies needed for security, sessions and preferences such as your selected colour theme. If optional analytics or marketing cookies are introduced, the relevant notice and consent choices should be updated before they are used.\n\nTo ask a privacy question or exercise a right, use the Contact page and label the enquiry “Privacy”. You may also have the right to complain to the Information Commissioner’s Office or another relevant supervisory authority. We may update this policy when our services, technology or legal obligations change; the latest version and update date will appear here.", 'background' => 'light'],
+                    ['type' => 'cta', 'heading' => 'Have a privacy question?', 'text' => 'Contact us without including sensitive personal or financial information. We will confirm an appropriate channel if more detail is required.', 'button_label' => 'Contact InvestAI', 'button_url' => '/contact?type=general', 'secondary_label' => 'Confidentiality approach', 'secondary_url' => '/confidentiality', 'background' => 'dark'],
+                ],
+            ],
+            'terms' => [
+                'title' => 'Terms of Use',
+                'description' => 'The terms that apply when using the InvestAI website and educational tools.',
+                'page_type' => 'legal',
+                'seo_title' => 'Website Terms of Use | InvestAI',
+                'seo_description' => 'Read the terms governing use of the InvestAI website, educational content, calculators, intellectual property and external links.',
+                'blocks' => [
+                    ['type' => 'hero', 'size' => 'compact', 'eyebrow' => 'Website terms', 'heading' => 'Clear boundaries make the website more useful.', 'text' => 'These terms govern access to the InvestAI website, blog and educational tools. By continuing to use the website, you agree to these terms. Last updated 24 October 2026.', 'image' => '/images/editorial/glass-architecture.jpg', 'image_alt' => 'Ordered architectural lines representing clear website terms', 'background' => 'dark'],
+                    ['type' => 'rich_text', 'heading' => 'Purpose of this website', 'text' => "InvestAI provides general information about its services, research approach and tools. Website material is educational and informational. It does not create an adviser-client, fiduciary, professional-services or other contractual relationship unless both parties enter a separate written agreement.\n\nYou must be at least 18 years old, or have the involvement of a parent or legal guardian where applicable, to submit an enquiry. The website is intended for lawful use. Availability in a location does not mean that every described service or activity is permitted or offered there.", 'background' => 'light'],
+                    ['type' => 'feature_cards', 'heading' => 'Using the website responsibly.', 'intro' => 'You are welcome to explore the content and tools within these reasonable limits.', 'items' => [
+                        ['icon' => 'check', 'heading' => 'Permitted use', 'text' => 'Use the website for personal or internal business research, share public links and download material only where a download is provided.'],
+                        ['icon' => 'shield', 'heading' => 'Prohibited use', 'text' => 'Do not interfere with security, submit unlawful or harmful material, impersonate others, scrape at disruptive scale or attempt unauthorised access.'],
+                        ['icon' => 'document', 'heading' => 'Your submissions', 'text' => 'Information you submit must be accurate to the best of your knowledge and must not violate another person’s rights or confidentiality.'],
+                    ], 'background' => 'surface'],
+                    ['type' => 'rich_text', 'heading' => 'Content, calculators and AI-assisted features', 'text' => "Content may be updated, corrected, reorganised or withdrawn without notice. Examples, scenarios and calculator results depend on the assumptions entered and may simplify tax, inflation, fees, market behaviour or personal circumstances. They are illustrations, not predictions or guarantees.\n\nAI-assisted material can contain errors, omissions or outdated information. Important facts should be checked against primary sources and decisions should receive appropriate human judgement. You remain responsible for how you use website information and for obtaining suitably qualified advice where needed.\n\nSeparate terms, scope, fees, responsibilities and deliverables will apply to any consulting or other paid engagement. If a separate signed agreement conflicts with these website terms in relation to that engagement, the signed agreement takes priority.", 'background' => 'light'],
+                    ['type' => 'split_content', 'eyebrow' => 'Ownership and links', 'heading' => 'Respect the work and verify external sources.', 'text' => 'Unless stated otherwise, the website design, brand, original writing and tools belong to InvestAI or its licensors. Limited personal or internal use does not transfer ownership. External links are provided for context and convenience; InvestAI does not control their availability, security or content.', 'image' => '/images/editorial/proposal-writing.jpg', 'image_alt' => 'Writing and documentation representing ownership of original content', 'image_side' => 'left', 'points' => [['text' => 'Do not reproduce substantial content without permission'], ['text' => 'Use quotations fairly and acknowledge the source'], ['text' => 'Review the terms and privacy practices of external websites'], ['text' => 'Tell us if a link or attribution needs correction']], 'background' => 'surface'],
+                    ['type' => 'rich_text', 'heading' => 'Availability and responsibility', 'text' => "We aim to keep the website useful, secure and accurate, but cannot promise uninterrupted access or that every item will always be complete, current or error-free. To the extent permitted by law, the website is provided without warranties and InvestAI is not responsible for losses arising solely from reliance on general website content, use of illustrative tools or third-party websites. Nothing in these terms excludes liability that cannot lawfully be excluded.\n\nWe may restrict access where necessary to protect users, systems or legal rights. These terms may be updated as the website and services develop. Continued use after an update means the revised terms apply from their stated date. Questions about these terms can be sent through the Contact page. Any governing-law or dispute provision in a signed client agreement will apply to that engagement; otherwise applicable law determines the relevant rights and forum.", 'background' => 'light'],
+                    ['type' => 'cta', 'heading' => 'Need clarification before using the website?', 'text' => 'Ask us about these terms or the boundary between educational content and an InvestAI engagement.', 'button_label' => 'Contact InvestAI', 'button_url' => '/contact?type=general', 'secondary_label' => 'Financial disclaimer', 'secondary_url' => '/financial-disclaimer', 'background' => 'dark'],
+                ],
+            ],
+            'financial-disclaimer' => [
+                'title' => 'Financial Disclaimer',
+                'description' => 'Important limitations and risk information for InvestAI content, tools and investment research.',
+                'page_type' => 'legal',
+                'seo_title' => 'Financial Disclaimer | InvestAI',
+                'seo_description' => 'Understand the limits of InvestAI educational content, calculators and AI-assisted research, including investment risk and no-advice boundaries.',
+                'blocks' => [
+                    ['type' => 'hero', 'size' => 'compact', 'eyebrow' => 'Financial disclaimer', 'heading' => 'Information supports judgement; it does not replace advice.', 'text' => 'Please read these important limitations before using InvestAI content, calculators or research material. Last updated 24 October 2026.', 'image' => '/images/editorial/financial-district.jpg', 'image_alt' => 'Financial district representing investment markets and uncertainty', 'background' => 'dark'],
+                    ['type' => 'callout', 'icon' => 'alert', 'heading' => 'Investing involves risk.', 'text' => 'The value of investments and income from them can fall as well as rise. You may receive back less than you invest, and some investments can result in the loss of all capital. Past performance does not predict future results.', 'background' => 'surface'],
+                    ['type' => 'rich_text', 'heading' => 'General information—not personal advice', 'text' => "Material on this website is provided for general educational and informational purposes. It does not take account of your financial position, objectives, tax status, knowledge, experience, capacity for loss or time horizon. Nothing on the website is investment, financial, legal, accounting or tax advice.\n\nNothing here is an offer, solicitation, personal recommendation or instruction to buy, sell, hold or subscribe for a security, fund, digital asset or other financial product. References to assets, sectors, strategies or market events are illustrative and should not be treated as endorsements. Obtain independent advice from an appropriately qualified and, where required, authorised professional before making a consequential financial decision.", 'background' => 'light'],
+                    ['type' => 'feature_cards', 'heading' => 'Understand the main limitations.', 'intro' => 'Useful research makes uncertainty visible rather than promising an outcome.', 'items' => [
+                        ['icon' => 'chart', 'heading' => 'Markets are uncertain', 'text' => 'Prices, income, liquidity, exchange rates, inflation, regulation and tax treatment can change, sometimes quickly and without warning.'],
+                        ['icon' => 'calculator', 'heading' => 'Calculators are illustrations', 'text' => 'Results depend on your inputs and simplified assumptions. They may omit tax, inflation, dealing spreads, product rules or changing fees.'],
+                        ['icon' => 'sparkles', 'heading' => 'AI can be wrong', 'text' => 'AI-assisted output may be incomplete, biased, outdated or confidently incorrect. Material claims require source verification and human review.'],
+                    ], 'background' => 'surface'],
+                    ['type' => 'rich_text', 'heading' => 'Research, forecasts and external information', 'text' => "Forecasts, scenarios, estimates and opinions are inherently uncertain. Actual outcomes can differ materially. Data may come from sources believed to be useful, but InvestAI does not guarantee that third-party information is complete, accurate or current. Publication dates matter, and later events may make content outdated.\n\nDiversification and risk controls can reduce dependence on a single outcome but cannot eliminate loss. Currency movements may increase or reduce returns. Smaller companies, emerging markets, illiquid assets, derivatives, leverage and cryptoassets may involve additional or amplified risks. Tax treatment depends on individual circumstances and can change.\n\nWhere the website links to another organisation, that link does not imply approval of its products, opinions or regulatory status. Check the source, relevant disclosures and applicable protections independently.", 'background' => 'light'],
+                    ['type' => 'split_content', 'eyebrow' => 'Before acting', 'heading' => 'Turn information into questions, not automatic trades.', 'text' => 'A sound decision starts with your goal, time horizon, liquidity needs and capacity for loss. Verify material facts, compare costs in pounds, test adverse scenarios and record what would change your view.', 'image' => '/images/editorial/conversation-meeting.jpg', 'image_alt' => 'A careful discussion representing professional financial guidance', 'image_side' => 'right', 'points' => [['text' => 'Check whether a provider and activity require regulatory authorisation'], ['text' => 'Read current product documents, charges and risk warnings'], ['text' => 'Consider tax, legal and personal circumstances'], ['text' => 'Seek qualified independent advice when appropriate']], 'background' => 'surface'],
+                    ['type' => 'rich_text', 'heading' => 'Regulatory position and responsibility', 'text' => "Website publication does not by itself mean that InvestAI is authorised to provide a regulated activity. Any service requiring authorisation will be offered only when the necessary permissions or lawful arrangements are in place. Do not assume that regulatory compensation or complaint protections apply to every activity described on the website.\n\nYou are responsible for evaluating whether information is appropriate for your circumstances and for decisions made using it. To the extent permitted by law, InvestAI does not accept responsibility for losses arising from reliance on general educational material, illustrative calculations, AI-assisted output or third-party content. Nothing in this disclaimer excludes liability that cannot lawfully be excluded.\n\nThis disclaimer should be read with the Privacy Policy and Terms of Use. If you notice a factual error or unclear statement, please contact us so it can be reviewed.", 'background' => 'light'],
+                    ['type' => 'cta', 'heading' => 'Have a question about an InvestAI explanation?', 'text' => 'Ask for clarification, but please do not include account numbers, holdings or other sensitive financial information in the web form.', 'button_label' => 'Contact InvestAI', 'button_url' => '/contact?type=investment', 'secondary_label' => 'Read the Terms', 'secondary_url' => '/terms', 'background' => 'dark'],
+                ],
+            ],
+        ];
+    }
+}

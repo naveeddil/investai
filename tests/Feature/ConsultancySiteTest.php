@@ -7,6 +7,8 @@ use App\Models\Article;
 use App\Models\Page;
 use Database\Seeders\ConsultancyContentSeeder;
 use Database\Seeders\CoreContentSeeder;
+use Database\Seeders\LegalContentSeeder;
+use Database\Seeders\ProcessImageSeeder;
 use Database\Seeders\ProductWebsiteSeeder;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
@@ -187,5 +189,44 @@ class ConsultancySiteTest extends TestCase
         $response->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
         $response->assertSee(route('pages.show', 'services'), false);
         $response->assertDontSee('secret-draft');
+    }
+
+    public function test_legal_pages_provide_substantial_plain_language_information(): void
+    {
+        $this->seed(LegalContentSeeder::class);
+
+        $expectations = [
+            'privacy' => ['What we collect and why.', 'Your choices and rights'],
+            'terms' => ['Using the website responsibly.', 'Content, calculators and AI-assisted features'],
+            'financial-disclaimer' => ['Investing involves risk.', 'General information—not personal advice'],
+        ];
+
+        foreach ($expectations as $slug => $content) {
+            $response = $this->get('/'.$slug)->assertOk();
+
+            foreach ($content as $text) {
+                $response->assertSee($text);
+            }
+        }
+    }
+
+    public function test_process_blocks_receive_accessible_editorial_images(): void
+    {
+        $this->seed(ProcessImageSeeder::class);
+
+        $page = Page::query()->where('slug', 'confidentiality')->firstOrFail();
+        $process = collect($page->blocks)->firstWhere('type', 'process');
+
+        foreach ($process['data']['steps'] as $step) {
+            $this->assertNotEmpty($step['image']);
+            $this->assertNotEmpty($step['image_alt']);
+            $this->assertFileExists(public_path(ltrim($step['image'], '/')));
+        }
+
+        $this->get('/confidentiality')
+            ->assertOk()
+            ->assertSee('/images/editorial/request-desk.jpg', false)
+            ->assertSee('/images/editorial/conversation-meeting.jpg', false)
+            ->assertSee('/images/editorial/proposal-writing.jpg', false);
     }
 }
