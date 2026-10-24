@@ -131,14 +131,21 @@ jobs:
       - name: Install the release and run Laravel commands
         env:
           SEED: ${{ inputs.seed_consultancy_content && '1' || '0' }}
+        # The server stops requests after ~30 seconds, so the hook works in
+        # short steps and answers CONTINUE until it has finished.
         run: |
-          status=0
-          curl --silent --show-error --fail-with-body --max-time 900 \
-            -X POST -H "X-Deploy-Token: $DEPLOY_TOKEN" --data "seed=$SEED" \
-            -o hook-output.txt "$STAGING_URL/$DEPLOY_ID.php" || status=$?
-          cat hook-output.txt
-          test "$status" -eq 0
-          grep -qx 'DEPLOYMENT COMPLETE' hook-output.txt
+          for attempt in $(seq 1 100); do
+            status=0
+            curl --silent --show-error --fail-with-body --max-time 60 \
+              -X POST -H "X-Deploy-Token: $DEPLOY_TOKEN" --data "seed=$SEED" \
+              -o hook-output.txt "$STAGING_URL/$DEPLOY_ID.php" || status=$?
+            cat hook-output.txt
+            test "$status" -eq 0
+            grep -qx 'DEPLOYMENT COMPLETE' hook-output.txt && exit 0
+            grep -qx 'CONTINUE' hook-output.txt
+          done
+          echo "The deployment hook did not finish after $attempt calls"
+          exit 1
 
       - name: Check the staging website responds
         run: curl --silent --show-error --fail --max-time 60 -o /dev/null -w 'HTTP %{http_code}\n' "$STAGING_URL/"
@@ -153,6 +160,7 @@ jobs:
           lftp --env-password --user "$FTP_USERNAME" -p 21 "ftp://$FTP_HOST" <<LFTP
           set cmd:fail-exit no
           rm -f /$DEPLOY_ID.zip
+          rm -f /.deploy-state-$DEPLOY_ID.json
           rm -f /public/$DEPLOY_ID.php
           bye
           LFTP
