@@ -1,0 +1,1 @@
+<h1>{{ $article->title }}</h1><p>{{ $article->excerpt }}</p><p><a href="{{ route('insights.show', $article->slug) }}">Read the complete weekly tip</a></p><p>This is general educational information, not personalised financial advice.</p><p><a href="{{ route('newsletter.preferences', $subscriber->manage_token) }}">Manage preferences or unsubscribe</a></p>

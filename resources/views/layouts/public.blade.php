@@ -123,6 +123,7 @@
     <main id="content">@yield('content')</main>
 
     <footer class="site-line border-t">
+        <div class="mx-auto max-w-7xl px-5 pt-16 lg:px-8"><x-newsletter-form /></div>
         <div class="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-[1.3fr_2fr] lg:px-8">
             <div class="grid content-start gap-5">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 text-xl font-semibold tracking-[-0.04em]"><img class="size-10 rounded-full bg-white object-contain p-1" src="/images/investai-logo.png" alt=""><span>Invest<span class="site-accent">AI</span></span></a>

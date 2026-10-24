@@ -140,6 +140,7 @@ class ProductWebsiteSeeder extends Seeder
                     ['type' => 'feature_cards', 'heading' => 'Values that guide the build.', 'items' => [
                         ['icon' => 'shield', 'heading' => 'Integrity', 'text' => 'Honesty, trust, commitment and personal responsibility.'], ['icon' => 'target', 'heading' => 'Accountability', 'text' => 'Goals, ownership and measurable progress.'], ['icon' => 'lightbulb', 'heading' => 'Innovation', 'text' => 'Creativity used to make finance more accessible and useful.'], ['icon' => 'users', 'heading' => 'People first', 'text' => 'Teamwork, diversity, courage, curiosity and leadership.'],
                     ], 'background' => 'light'],
+                    ['type' => 'team', 'eyebrow' => 'The people behind InvestAI', 'heading' => 'Meet the team.', 'text' => 'Finance, technology and research experience brought together around clearer, more responsible investment decisions.', 'background' => 'surface'],
                     ['type' => 'cta', 'heading' => 'Interested in InvestAI?', 'text' => 'Arrange a consultation about the research approach, tools or a potential partnership.', 'button_label' => 'Consult with InvestAI', 'button_url' => '/consultation?topic=platform', 'secondary_label' => 'Contact us', 'secondary_url' => '/contact', 'background' => 'dark'],
                 ],
             ],

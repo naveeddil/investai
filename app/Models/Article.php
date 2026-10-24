@@ -13,11 +13,11 @@ class Article extends Model
     /** @use HasFactory<ArticleFactory> */
     use HasFactory;
 
-    protected $fillable = ['title', 'slug', 'kind', 'status', 'excerpt', 'body', 'featured_image', 'featured_image_alt', 'source_url', 'generated_by_ai', 'review_notes', 'reviewed_by', 'reviewed_at', 'published_at', 'scheduled_for'];
+    protected $fillable = ['title', 'slug', 'kind', 'status', 'excerpt', 'body', 'featured_image', 'featured_image_alt', 'source_url', 'generated_by_ai', 'review_notes', 'reviewed_by', 'reviewed_at', 'published_at', 'scheduled_for', 'weekly_emailed_at'];
 
     protected function casts(): array
     {
-        return ['generated_by_ai' => 'boolean', 'reviewed_at' => 'datetime', 'published_at' => 'datetime', 'scheduled_for' => 'datetime'];
+        return ['generated_by_ai' => 'boolean', 'reviewed_at' => 'datetime', 'published_at' => 'datetime', 'scheduled_for' => 'datetime', 'weekly_emailed_at' => 'datetime'];
     }
 
     protected static function booted(): void

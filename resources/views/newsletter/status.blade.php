@@ -1,0 +1,2 @@
+@extends('layouts.public', ['metaTitle' => $heading.' | InvestAI'])
+@section('content')<section class="mx-auto max-w-3xl px-5 py-24"><div class="site-surface site-line grid gap-6 rounded-[2rem] border p-10"><h1 class="section-title font-semibold">{{ $heading }}</h1><p class="site-muted text-lg">{{ $message }}</p><a class="site-button inline-flex w-fit rounded-full px-6 py-3 font-semibold" href="{{ route('insights.index') }}">Read the blog</a></div></section>@endsection

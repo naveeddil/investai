@@ -3,6 +3,7 @@
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\ContactSubmissionController;
 use App\Http\Controllers\InsightController;
+use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\RiskExplanationController;
 use App\Http\Controllers\SitemapController;
@@ -27,6 +28,11 @@ Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
 Route::get('/insights', [InsightController::class, 'index'])->name('insights.index');
 Route::get('/insights/{slug}', [InsightController::class, 'show'])->name('insights.show');
+Route::post('/newsletter/subscribe', [NewsletterSubscriptionController::class, 'store'])->middleware('throttle:public-forms')->name('newsletter.store');
+Route::get('/newsletter/confirm/{token}', [NewsletterSubscriptionController::class, 'confirm'])->name('newsletter.confirm');
+Route::get('/newsletter/preferences/{token}', [NewsletterSubscriptionController::class, 'preferences'])->name('newsletter.preferences');
+Route::put('/newsletter/preferences/{token}', [NewsletterSubscriptionController::class, 'update'])->name('newsletter.preferences.update');
+Route::post('/newsletter/unsubscribe/{token}', [NewsletterSubscriptionController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 
 foreach ([
     'platform' => '/services',
