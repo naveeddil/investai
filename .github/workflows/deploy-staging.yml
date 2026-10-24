@@ -1,0 +1,91 @@
+name: Deploy to staging
+
+# Manual only: nothing is deployed until someone presses "Run workflow".
+on:
+  workflow_dispatch:
+    inputs:
+      run_migrations:
+        description: 'Run database migrations after the files are copied'
+        type: boolean
+        default: true
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 20
+
+    env:
+      SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
+      SSH_PORT: ${{ secrets.STAGING_SSH_PORT }}
+      SSH_USER: ${{ secrets.STAGING_SSH_USER }}
+      DEPLOY_PATH: ${{ vars.STAGING_PATH }}
+      PHP_BIN: ${{ vars.STAGING_PHP_BIN }}
+      RUN_MIGRATIONS: ${{ inputs.run_migrations }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: bcmath, curl, dom, fileinfo, intl, mbstring, pdo_sqlite, zip
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies and build assets
+        run: |
+          composer install --no-interaction --prefer-dist
+          npm ci --ignore-scripts
+          npm run build -- --configLoader native
+
+      - name: Run the tests
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+          php artisan test --compact
+          rm -f .env
+
+      - name: Keep production dependencies only
+        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Prepare SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.STAGING_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.STAGING_SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Copy the release to the server
+        run: |
+          SSH="ssh -p ${SSH_PORT:-22} -i $HOME/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+          for item in app bootstrap config database public resources routes vendor; do
+            rsync -az --delete \
+              --exclude='/storage' \
+              --exclude='/database.sqlite' \
+              -e "$SSH" "$item/" "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/$item/"
+          done
+          rsync -az -e "$SSH" artisan composer.json composer.lock "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
+
+      - name: Migrate and refresh caches
+        run: |
+          SSH="ssh -p ${SSH_PORT:-22} -i $HOME/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+          PHP="${PHP_BIN:-/opt/cpanel/ea-php84/root/usr/bin/php}"
+          MIGRATE=""
+          if [ "$RUN_MIGRATIONS" = "true" ]; then MIGRATE="$PHP artisan migrate --force &&"; fi
+          $SSH "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && $MIGRATE $PHP artisan optimize:clear && $PHP artisan optimize && $PHP artisan filament:optimize"
+
+      - name: Remove SSH material
+        if: always()
+        run: rm -f ~/.ssh/deploy_key ~/.ssh/known_hosts
