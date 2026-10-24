@@ -83,6 +83,8 @@ jobs:
           : "${LFTP_PASSWORD:?Add the STAGING_FTP_PASSWORD repository secret}"
           lftp --env-password --user "$FTP_USERNAME" -p 21 "ftp://$FTP_HOST" <<'LFTP'
           set cmd:fail-exit yes
+          set ftp:passive-mode yes
+          set ftp:sync-mode yes
           set ftp:ssl-force yes
           set ftp:ssl-protect-data yes
           set ftp:ssl-protect-list yes
@@ -91,9 +93,11 @@ jobs:
           set net:timeout 30
           set net:max-retries 2
           set net:reconnect-interval-base 5
+          set xfer:timeout 120
+          set xfer:use-temp-file yes
           cd /
           cls -d app bootstrap public storage vendor
-          mirror --reverse --verbose --no-perms --parallel=2 artifacts/ftps-release/ /
+          mirror --reverse --verbose=3 --no-perms --overwrite --max-errors=1 --parallel=1 artifacts/ftps-release/ /
           bye
           LFTP
 
