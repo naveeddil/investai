@@ -43,13 +43,13 @@ class PublicPageControllerTest extends TestCase
             'group' => 'appearance',
             'key' => 'appearance.theme',
             'type' => 'string',
-            'value' => 'ivory',
+            'value' => 'cobalt',
         ]);
 
         $response = $this->get('/themed-page');
 
         $response->assertOk();
-        $response->assertSee('data-theme="ivory"', false);
+        $response->assertSee('data-theme="cobalt"', false);
     }
 
     public function test_public_page_falls_back_when_the_configured_theme_is_invalid(): void
@@ -65,8 +65,15 @@ class PublicPageControllerTest extends TestCase
         $response = $this->get('/safe-theme');
 
         $response->assertOk();
-        $response->assertSee('data-theme="midnight"', false);
+        $response->assertSee('data-theme="ivory"', false);
         $response->assertDontSee('data-theme="untrusted-class"', false);
+    }
+
+    public function test_public_page_defaults_to_the_ivory_theme(): void
+    {
+        Page::factory()->published()->create(['slug' => 'default-theme']);
+
+        $this->get('/default-theme')->assertOk()->assertSee('data-theme="ivory"', false);
     }
 
     public function test_current_navigation_link_is_identified_and_visually_active(): void

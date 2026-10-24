@@ -33,7 +33,7 @@ class CoreContentSeeder extends Seeder
         Navigation::updateOrCreate(['key' => 'footer'], ['name' => 'Footer Navigation']);
         SiteSetting::updateOrCreate(['key' => 'appearance.theme'], [
             'group' => 'appearance',
-            'value' => 'midnight',
+            'value' => 'ivory',
             'type' => 'string',
         ]);
     }

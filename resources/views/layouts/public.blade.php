@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="{{ $siteTheme ?? 'midnight' }}">
+<html lang="en" data-theme="{{ $siteTheme ?? 'ivory' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
