@@ -180,10 +180,6 @@ if ($state['phase'] === 'artisan') {
     if (($_POST['seed'] ?? '') === '1') {
         $commands[] = ['db:seed', ['--class' => 'ConsultancyContentSeeder', '--force' => true]];
     }
-    // ProductWebsiteSeeder is idempotent and contains the canonical public
-    // product pages for this release. Apply it after the optional legacy seed
-    // so ordinary push deployments cannot leave stale consultancy copy live.
-    $commands[] = ['db:seed', ['--class' => 'ProductWebsiteSeeder', '--force' => true]];
     $commands[] = ['optimize:clear', []];
 
     foreach ($commands as [$command, $arguments]) {
