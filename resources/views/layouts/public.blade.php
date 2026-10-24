@@ -9,6 +9,14 @@
         $socialTitle = ($page->open_graph_title ?? null) ?: $pageTitle;
         $socialDescription = ($page->open_graph_description ?? null) ?: $pageDescription;
         $socialImage = url('/images/investai-logo.png');
+        $organizationSchema = [
+            chr(64).'context' => 'https://schema.org',
+            chr(64).'type' => 'Organization',
+            'name' => 'InvestAI',
+            'url' => url('/'),
+            'logo' => $socialImage,
+            'description' => 'AI-assisted investment research focused on personal goals, transparent reasoning and risk awareness.',
+        ];
     @endphp
     <title>{{ $pageTitle }}</title>
     <meta name="description" content="{{ $pageDescription }}">
@@ -38,7 +46,7 @@
     <link rel="manifest" href="/site.webmanifest">
     <script>document.documentElement.classList.add('js');</script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => 'InvestAI', 'url' => url('/'), 'logo' => url('/images/investai-logo.png'), 'description' => 'AI-assisted investment research focused on personal goals, transparent reasoning and risk awareness.'], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
+    <script type="application/ld+json">{!! json_encode($organizationSchema, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 </head>
 <body class="site-shell min-h-screen antialiased">
     @php
