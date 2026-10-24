@@ -95,9 +95,10 @@ jobs:
           set net:reconnect-interval-base 5
           set xfer:timeout 120
           set xfer:use-temp-file yes
+          set mirror:parallel-directories yes
           cd /
           cls -d app bootstrap public storage vendor
-          mirror --reverse --verbose=3 --no-perms --overwrite --max-errors=1 --parallel=1 artifacts/ftps-release/ /
+          mirror --reverse --verbose=3 --no-perms --overwrite --max-errors=1 --parallel=4 artifacts/ftps-release/ /
           bye
           LFTP
 
