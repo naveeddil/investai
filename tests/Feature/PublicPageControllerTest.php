@@ -76,6 +76,24 @@ class PublicPageControllerTest extends TestCase
         $this->get('/default-theme')->assertOk()->assertSee('data-theme="ivory"', false);
     }
 
+    public function test_ivory_migration_replaces_the_old_midnight_default_only(): void
+    {
+        $setting = SiteSetting::factory()->create([
+            'group' => 'appearance',
+            'key' => 'appearance.theme',
+            'type' => 'string',
+            'value' => 'midnight',
+        ]);
+        $migration = require database_path('migrations/2026_10_24_130000_make_ivory_the_default_site_theme.php');
+
+        $migration->up();
+        $this->assertSame('ivory', $setting->fresh()->value);
+
+        $setting->update(['value' => 'cobalt']);
+        $migration->up();
+        $this->assertSame('cobalt', $setting->fresh()->value);
+    }
+
     public function test_current_navigation_link_is_identified_and_visually_active(): void
     {
         Page::factory()->published()->create(['slug' => 'about', 'title' => 'About InvestAI']);
