@@ -26,7 +26,7 @@ class StoreContactSubmissionRequest extends FormRequest
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email:rfc', 'max:255'],
             'company' => ['nullable', 'string', 'max:160'],
-            'enquiry_type' => ['required', 'string', 'in:consulting,general,partnership,investment,media,other'],
+            'enquiry_type' => ['required', 'string', 'in:consulting,general,partnership,investment,media,feedback,other'],
             'message' => ['required', 'string', 'min:10', 'max:5000'],
         ];
     }

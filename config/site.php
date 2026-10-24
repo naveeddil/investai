@@ -15,16 +15,16 @@ return [
     'primary_action' => ['label' => 'Consult', 'slug' => 'consultation'],
 
     'navigation' => [
-        ['label' => 'Product', 'slug' => 'platform'],
+        ['label' => 'Services', 'slug' => 'services'],
         ['label' => 'How it works', 'slug' => 'approach'],
         ['label' => 'Risk & calculators', 'slug' => 'ai-tools'],
-        ['label' => 'Insights', 'route' => 'insights.index'],
+        ['label' => 'Blog', 'route' => 'insights.index'],
         ['label' => 'About', 'slug' => 'about'],
     ],
 
     'footer' => [
         'InvestAI' => [
-            ['label' => 'The product', 'slug' => 'platform'],
+            ['label' => 'Services', 'slug' => 'services'],
             ['label' => 'How it works', 'slug' => 'approach'],
             ['label' => 'Risk & calculators', 'slug' => 'ai-tools'],
             ['label' => 'About InvestAI', 'slug' => 'about'],
@@ -34,7 +34,7 @@ return [
             ['label' => 'Contact', 'slug' => 'contact'],
         ],
         'Resources' => [
-            ['label' => 'Insights', 'route' => 'insights.index'],
+            ['label' => 'Blog', 'route' => 'insights.index'],
             ['label' => 'FAQ', 'slug' => 'faq'],
             ['label' => 'Confidentiality', 'slug' => 'confidentiality'],
         ],

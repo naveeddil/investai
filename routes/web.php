@@ -29,13 +29,13 @@ Route::get('/insights', [InsightController::class, 'index'])->name('insights.ind
 Route::get('/insights/{slug}', [InsightController::class, 'show'])->name('insights.show');
 
 foreach ([
-    'services' => '/platform',
-    'business-strategy' => '/platform',
-    'data-analytics' => '/platform',
-    'ai-advisory' => '/platform',
+    'platform' => '/services',
+    'business-strategy' => '/services',
+    'data-analytics' => '/services',
+    'ai-advisory' => '/services',
     'financial-analytics' => '/ai-tools',
     'industries' => '/about',
-    'engagement-models' => '/platform',
+    'engagement-models' => '/services',
     'case-studies' => '/insights',
     'technology' => '/approach',
 ] as $legacyPath => $destination) {

@@ -13,10 +13,11 @@ class ContentAutomationTest extends TestCase
 
     public function test_weekly_command_is_idempotent_and_only_creates_a_draft(): void
     {
+        $startingCount = Article::query()->count();
         $this->artisan('insights:create-weekly-draft')->assertSuccessful();
         $this->artisan('insights:create-weekly-draft')->assertSuccessful();
 
-        $this->assertDatabaseCount(Article::class, 1);
+        $this->assertDatabaseCount(Article::class, $startingCount + 1);
         $this->assertDatabaseHas(Article::class, [
             'kind' => 'weekly_tip',
             'status' => 'draft',
@@ -37,7 +38,7 @@ class ContentAutomationTest extends TestCase
 
         $this->artisan('content:import-wordpress', ['--url' => 'https://legacy.example'])->assertSuccessful();
 
-        $article = Article::firstOrFail();
+        $article = Article::query()->where('source_url', 'https://legacy.example/legacy-post/')->firstOrFail();
         $this->assertSame('draft', $article->status);
         $this->assertSame('legacy', $article->kind);
         $this->assertSame('Useful text', $article->body);

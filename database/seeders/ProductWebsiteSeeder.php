@@ -26,6 +26,11 @@ class ProductWebsiteSeeder extends Seeder
                 'published_at' => now(),
             ]);
         }
+
+        Page::query()->where('slug', 'platform')->update([
+            'status' => PageStatus::Draft,
+            'index_by_search_engines' => false,
+        ]);
     }
 
     private function pages(): array
@@ -38,7 +43,7 @@ class ProductWebsiteSeeder extends Seeder
                 'seo_title' => 'InvestAI | Invest smarter with transparent AI-assisted research',
                 'seo_description' => 'Explore investment goals, risk and long-term scenarios with transparent AI-assisted research developed through nearly three years of work.',
                 'blocks' => [
-                    ['type' => 'hero', 'eyebrow' => 'Invest smarter with AI', 'heading' => 'Investment research that starts with you.', 'text' => 'InvestAI is building an accessible platform that brings together your goals, time horizon, experience and tolerance for loss—then uses data and AI to explain investment research in plain English.', 'button_label' => 'Explore the product', 'button_url' => '/platform', 'secondary_label' => 'Try the calculators', 'secondary_url' => '/ai-tools', 'visual' => 'dashboard', 'highlights' => [['text' => 'Personal goals'], ['text' => 'Risk-aware scenarios'], ['text' => 'Transparent reasoning'], ['text' => 'Human oversight']], 'background' => 'dark'],
+                    ['type' => 'hero', 'eyebrow' => 'Invest smarter with AI', 'heading' => 'Investment research that starts with you.', 'text' => 'InvestAI brings together your goals, time horizon, experience and tolerance for loss—then uses data and AI to explain investment research in plain English.', 'button_label' => 'Explore our services', 'button_url' => '/services', 'secondary_label' => 'Try the calculators', 'secondary_url' => '/ai-tools', 'visual' => 'dashboard', 'highlights' => [['text' => 'Personal goals'], ['text' => 'Risk-aware scenarios'], ['text' => 'Transparent reasoning'], ['text' => 'Human oversight']], 'background' => 'dark'],
                     ['type' => 'callout', 'icon' => 'scale', 'heading' => 'Research and education—not investment advice.', 'text' => 'InvestAI has been developed over nearly three years. It is not currently offering personalised investment advice, arranging investments or managing client money. The tools and content on this website are educational illustrations. Capital is at risk when investing.', 'link_label' => 'Read the financial disclaimer', 'link_url' => '/financial-disclaimer', 'background' => 'surface'],
                     ['type' => 'feature_cards', 'heading' => 'A clearer path from goals to research.', 'intro' => 'The product concept follows the business plan: understand the person first, analyse evidence second, and keep the reasoning visible.', 'items' => [
                         ['icon' => 'target', 'heading' => 'Build your profile', 'text' => 'Capture goals, timeline, income and commitments, experience, tax context and preferences.'],
@@ -57,15 +62,21 @@ class ProductWebsiteSeeder extends Seeder
                         ['phase' => 'Current focus', 'icon' => 'flag', 'heading' => 'Practical tools & consultation', 'text' => 'Make risk analysis, fee illustrations and research conversations accessible today.', 'status' => 'active'],
                         ['phase' => 'Continuing', 'icon' => 'globe', 'heading' => 'Responsible expansion', 'text' => 'Extend capabilities and markets in step with evidence and regulatory permissions.', 'status' => 'planned'],
                     ], 'note' => 'InvestAI continues to evolve as research, technology and regulatory requirements change.', 'background' => 'dark'],
-                    ['type' => 'latest_insights', 'eyebrow' => 'Insights', 'heading' => 'Research habits for better decisions.', 'intro' => 'Educational perspectives on evidence, risk and long-term investing.', 'background' => 'light'],
+                    ['type' => 'latest_insights', 'eyebrow' => 'Blog', 'heading' => 'Tips for better financial decisions.', 'intro' => 'Professional, practical perspectives on evidence, risk, fees and long-term investing.', 'background' => 'light'],
                     ['type' => 'cta', 'heading' => 'Discuss your investment research needs.', 'text' => 'Arrange a consultation to explore your goals, risk questions and how InvestAI may support your research process.', 'button_label' => 'Consult with InvestAI', 'button_url' => '/consultation?topic=platform', 'secondary_label' => 'About InvestAI', 'secondary_url' => '/about', 'background' => 'surface'],
                 ],
             ],
-            'platform' => [
-                'title' => 'The InvestAI Product', 'description' => 'The product vision, personal profile, safeguards and roadmap for InvestAI.',
-                'seo_title' => 'The product | InvestAI', 'seo_description' => 'See how InvestAI plans to make investment research more personal, accessible and transparent.',
+            'services' => [
+                'title' => 'InvestAI Services', 'description' => 'AI-assisted investment research, risk analysis, educational tools and consultation from InvestAI.',
+                'seo_title' => 'Services | InvestAI', 'seo_description' => 'Explore InvestAI services for risk-aware research, transparent scenarios, educational tools and consultation.',
                 'blocks' => [
-                    ['type' => 'hero', 'size' => 'compact', 'eyebrow' => 'Nearly three years of focused development', 'heading' => 'Personalised investment research, explained clearly.', 'text' => 'InvestAI combines a detailed investor profile with data analysis and AI-assisted explanations, helping users explore investment questions without hiding assumptions or uncertainty.', 'button_label' => 'Request a consultation', 'button_url' => '/consultation?topic=platform', 'secondary_label' => 'Try the tools', 'secondary_url' => '/ai-tools', 'visual' => 'dashboard', 'background' => 'dark'],
+                    ['type' => 'hero', 'size' => 'compact', 'eyebrow' => 'Nearly three years of focused development', 'heading' => 'Investment research services, explained clearly.', 'text' => 'InvestAI combines structured profiling, risk analysis, financial data and AI-assisted explanations to help clients explore investment questions without hiding assumptions or uncertainty.', 'button_label' => 'Request a consultation', 'button_url' => '/consultation?topic=platform', 'secondary_label' => 'Try the tools', 'secondary_url' => '/ai-tools', 'visual' => 'dashboard', 'background' => 'dark'],
+                    ['type' => 'service_grid', 'eyebrow' => 'Our services', 'heading' => 'Practical support for better-informed decisions.', 'intro' => 'Choose a focused consultation or combine services around a broader research question.', 'items' => [
+                        ['icon' => 'target', 'heading' => 'Goals & investor profiling', 'text' => 'Structure goals, time horizon, experience, preferences and financial constraints before examining options.'],
+                        ['icon' => 'scale', 'heading' => 'Risk & scenario analysis', 'text' => 'Explore capacity for loss, concentration, volatility and plausible downside scenarios in clear language.'],
+                        ['icon' => 'search', 'heading' => 'Investment research support', 'text' => 'Organise evidence, assumptions and counterarguments so the reasoning behind a decision can be reviewed.'],
+                        ['icon' => 'sparkles', 'heading' => 'AI-assisted explanations', 'text' => 'Turn complex research into concise, traceable explanations with human review and stated limitations.'],
+                    ], 'background' => 'surface'],
                     ['type' => 'feature_cards', 'heading' => 'Your profile shapes the research.', 'intro' => 'The source business plan identifies the information needed to frame useful, responsible analysis.', 'items' => [
                         ['icon' => 'target', 'heading' => 'Goals & timeline', 'text' => 'What the money is for and when it may be needed.'], ['icon' => 'scale', 'heading' => 'Risk & loss tolerance', 'text' => 'Comfort with market swings and ability to absorb loss.'], ['icon' => 'banknote', 'heading' => 'Financial context', 'text' => 'Income, expenses, liabilities, tax context and other obligations.'], ['icon' => 'document', 'heading' => 'Experience', 'text' => 'Existing knowledge and products used, so explanations fit the user.'], ['icon' => 'leaf', 'heading' => 'Values & preferences', 'text' => 'Sustainable investing and active or passive preferences.'], ['icon' => 'chat', 'heading' => 'Control & updates', 'text' => 'Preferred involvement and how information should be delivered.'],
                     ], 'background' => 'light'],
@@ -77,8 +88,8 @@ class ProductWebsiteSeeder extends Seeder
                 ],
             ],
             'approach' => [
-                'title' => 'How InvestAI Works', 'description' => 'How the planned InvestAI journey moves from personal profile to transparent, risk-aware research.',
-                'seo_title' => 'How it works | InvestAI', 'seo_description' => 'See the planned InvestAI journey from goals and risk profile to evidence, scenarios and ongoing review.',
+                'title' => 'How InvestAI Works', 'description' => 'How the InvestAI service moves from personal profile to transparent, risk-aware research.',
+                'seo_title' => 'How it works | InvestAI', 'seo_description' => 'See the InvestAI journey from goals and risk profile to evidence, scenarios and ongoing review.',
                 'blocks' => [
                     ['type' => 'hero', 'size' => 'compact', 'eyebrow' => 'How it works', 'heading' => 'Profile first. Evidence next. Decision stays yours.', 'text' => 'InvestAI is designed to gather relevant context, analyse information at scale and explain the result—without pretending that markets are predictable or risk can be removed.', 'button_label' => 'Try the risk tools', 'button_url' => '/ai-tools', 'background' => 'dark'],
                     ['type' => 'process', 'eyebrow' => 'The InvestAI journey', 'heading' => 'Four steps to a better-informed decision.', 'steps' => [
@@ -107,7 +118,7 @@ class ProductWebsiteSeeder extends Seeder
                 'title' => 'Frequently Asked Questions', 'description' => 'Answers about the InvestAI product, tools, AI, risk and regulatory status.',
                 'seo_title' => 'FAQ | InvestAI', 'seo_description' => 'Answers about InvestAI, its planned product, educational calculators, use of AI and regulatory status.',
                 'blocks' => [
-                    ['type' => 'hero', 'size' => 'compact', 'eyebrow' => 'FAQ', 'heading' => 'Clear answers about InvestAI.', 'text' => 'What exists today, what is planned and what the educational tools can—and cannot—tell you.', 'button_label' => 'Explore the product', 'button_url' => '/platform', 'background' => 'dark'],
+                    ['type' => 'hero', 'size' => 'compact', 'eyebrow' => 'FAQ', 'heading' => 'Clear answers about InvestAI.', 'text' => 'What our services cover and what the educational tools can—and cannot—tell you.', 'button_label' => 'Explore services', 'button_url' => '/services', 'background' => 'dark'],
                     ['type' => 'faq', 'eyebrow' => 'Product & tools', 'heading' => 'The essentials.', 'open_first' => true, 'items' => [
                         ['question' => 'How established is InvestAI?', 'answer' => 'InvestAI reflects nearly three years of product, finance and research work. The website provides established educational tools and explains the service approach; regulated services are offered only where the required permissions are in place.'],
                         ['question' => 'Does InvestAI currently provide investment advice?', 'answer' => 'InvestAI currently provides educational information and research-oriented consultations, not regulated personalised investment advice, investment arranging or client-money management.'],
@@ -123,7 +134,7 @@ class ProductWebsiteSeeder extends Seeder
                 'title' => 'About InvestAI', 'description' => 'The purpose, values and founder behind InvestAI.',
                 'seo_title' => 'About | InvestAI', 'seo_description' => 'InvestAI was founded by finance professional Fahim Ahmed to make investment research more accessible, personal and transparent.',
                 'blocks' => [
-                    ['type' => 'hero', 'size' => 'compact', 'eyebrow' => 'About InvestAI', 'heading' => 'Finance experience meets responsible technology.', 'text' => 'InvestAI was founded to make structured investment research easier to access and understand, using AI as an analytical assistant while keeping transparency, integrity and personal responsibility at the centre.', 'button_label' => 'See the product vision', 'button_url' => '/platform', 'background' => 'dark'],
+                    ['type' => 'hero', 'size' => 'compact', 'eyebrow' => 'About InvestAI', 'heading' => 'Finance experience meets responsible technology.', 'text' => 'InvestAI was founded to make structured investment research easier to access and understand, using AI as an analytical assistant while keeping transparency, integrity and personal responsibility at the centre.', 'button_label' => 'Explore our services', 'button_url' => '/services', 'background' => 'dark'],
                     ['type' => 'split_content', 'eyebrow' => 'Founder', 'heading' => 'Fahim Ahmed', 'text' => 'Fahim brings more than 15 years of finance experience, including roles with the World Health Organization, Save the Children, Catholic Relief Services and the Anti-Narcotics Force. His background includes commerce, an MBA and internal-audit certification.', 'image' => '/images/editorial/financial-district.jpg', 'image_alt' => 'Financial district representing the founder’s finance background', 'image_side' => 'right', 'points' => [['text' => 'Finance, budgeting and operational leadership'], ['text' => 'Experience across international and public-interest organisations'], ['text' => 'Focus on accessible, evidence-led financial decision-making']], 'background' => 'surface'],
                     ['type' => 'feature_cards', 'heading' => 'Values that guide the build.', 'items' => [
                         ['icon' => 'shield', 'heading' => 'Integrity', 'text' => 'Honesty, trust, commitment and personal responsibility.'], ['icon' => 'target', 'heading' => 'Accountability', 'text' => 'Goals, ownership and measurable progress.'], ['icon' => 'lightbulb', 'heading' => 'Innovation', 'text' => 'Creativity used to make finance more accessible and useful.'], ['icon' => 'users', 'heading' => 'People first', 'text' => 'Teamwork, diversity, courage, curiosity and leadership.'],

@@ -19,7 +19,7 @@ class ConsultancySiteTest extends TestCase
      * @var list<string>
      */
     private const PRODUCT_SLUGS = [
-        'about', 'approach', 'contact', 'consultation', 'platform', 'ai-tools', 'faq', 'confidentiality',
+        'about', 'approach', 'contact', 'consultation', 'services', 'ai-tools', 'faq', 'confidentiality',
     ];
 
     protected function setUp(): void
@@ -37,7 +37,7 @@ class ConsultancySiteTest extends TestCase
         $response->assertSee('Invest smarter with AI');
         $response->assertSee('Investment research that starts with you.');
 
-        foreach (['platform', 'ai-tools', 'about'] as $slug) {
+        foreach (['services', 'ai-tools', 'about'] as $slug) {
             $response->assertSee(route('pages.show', $slug), false);
         }
     }
@@ -60,7 +60,7 @@ class ConsultancySiteTest extends TestCase
 
     public function test_the_platform_page_presents_its_track_record_and_offers_consultation(): void
     {
-        $response = $this->get('/platform');
+        $response = $this->get('/services');
 
         $response->assertOk();
         $response->assertSee('Nearly three years of focused development');
@@ -100,7 +100,7 @@ class ConsultancySiteTest extends TestCase
 
     public function test_legacy_service_pages_redirect_to_the_consolidated_product_pages(): void
     {
-        $this->get('/services')->assertRedirect('/platform');
+        $this->get('/platform')->assertRedirect('/services');
         $this->get('/financial-analytics')->assertRedirect('/ai-tools');
     }
 
@@ -176,7 +176,7 @@ class ConsultancySiteTest extends TestCase
 
         $response->assertOk();
         $response->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
-        $response->assertSee(route('pages.show', 'platform'), false);
+        $response->assertSee(route('pages.show', 'services'), false);
         $response->assertDontSee('secret-draft');
     }
 }
