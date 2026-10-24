@@ -58,14 +58,14 @@ class ConsultancySiteTest extends TestCase
         }
     }
 
-    public function test_the_platform_page_discloses_its_development_status_and_offers_the_waitlist(): void
+    public function test_the_platform_page_presents_its_track_record_and_offers_consultation(): void
     {
         $response = $this->get('/platform');
 
         $response->assertOk();
-        $response->assertSee('Product in development');
-        $response->assertSee(route('waitlist.store'), false);
-        $response->assertSee('before any regulated UK service is offered');
+        $response->assertSee('Nearly three years of focused development');
+        $response->assertSee(route('consultation.store'), false);
+        $response->assertSee('Regulatory clarity remains essential.');
     }
 
     public function test_confidentiality_is_covered_on_its_own_page_and_linked_from_home_and_footer(): void
@@ -95,7 +95,7 @@ class ConsultancySiteTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('"@type":"FAQPage"', false);
-        $response->assertSee('Is the InvestAI platform live?');
+        $response->assertSee('How established is InvestAI?');
     }
 
     public function test_legacy_service_pages_redirect_to_the_consolidated_product_pages(): void

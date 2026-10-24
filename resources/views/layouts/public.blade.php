@@ -22,7 +22,7 @@
     <link rel="icon" href="/favicon.ico">
     <script>document.documentElement.classList.add('js');</script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => 'InvestAI', 'url' => url('/'), 'logo' => url('/images/investai-logo.png'), 'description' => 'AI-assisted investment research platform in development, focused on personal goals, transparent reasoning and risk awareness.'], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
+    <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => 'InvestAI', 'url' => url('/'), 'logo' => url('/images/investai-logo.png'), 'description' => 'AI-assisted investment research focused on personal goals, transparent reasoning and risk awareness.'], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 </head>
 <body class="site-shell min-h-screen antialiased">
     @php

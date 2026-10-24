@@ -12,7 +12,7 @@
 */
 
 return [
-    'primary_action' => ['label' => 'Join the waitlist', 'slug' => 'platform', 'fragment' => 'waitlist'],
+    'primary_action' => ['label' => 'Consult', 'slug' => 'consultation'],
 
     'navigation' => [
         ['label' => 'Product', 'slug' => 'platform'],
