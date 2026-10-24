@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @php
         $pageTitle = $metaTitle ?? (($page->seo_title ?? null) ?: (($page->title ?? 'InvestAI').' | InvestAI'));
-        $pageDescription = $metaDescription ?? (($page->seo_description ?? null) ?: ($page->description ?? 'AI-assisted investment research designed around personal goals, transparent reasoning and risk awareness.'));
+        $pageDescription = $metaDescription ?? (($page->seo_description ?? null) ?: ($page->description ?? 'Make clearer investment decisions with AI-assisted research. Explore practical tools, risk insights and evidence-led guidance.'));
+        $socialTitle = ($page->open_graph_title ?? null) ?: $pageTitle;
+        $socialDescription = ($page->open_graph_description ?? null) ?: $pageDescription;
+        $socialImage = url('/images/investai-logo.png');
     @endphp
     <title>{{ $pageTitle }}</title>
     <meta name="description" content="{{ $pageDescription }}">
@@ -13,13 +16,26 @@
     <meta name="theme-color" content="#050816">
     <meta property="og:site_name" content="InvestAI">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ ($page->open_graph_title ?? null) ?: $pageTitle }}">
-    <meta property="og:description" content="{{ ($page->open_graph_description ?? null) ?: $pageDescription }}">
+    <meta property="og:title" content="{{ $socialTitle }}">
+    <meta property="og:description" content="{{ $socialDescription }}">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:image" content="{{ url('/images/investai-logo.png') }}">
+    <meta property="og:image" content="{{ $socialImage }}">
+    <meta property="og:image:secure_url" content="{{ $socialImage }}">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="973">
+    <meta property="og:image:height" content="981">
+    <meta property="og:image:alt" content="InvestAI — invest with intelligence">
     <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ $socialTitle }}">
+    <meta name="twitter:description" content="{{ $socialDescription }}">
+    <meta name="twitter:image" content="{{ $socialImage }}">
+    <meta name="twitter:image:alt" content="InvestAI — invest with intelligence">
     @if (($page->canonical_url ?? null))<link rel="canonical" href="{{ $page->canonical_url }}">@endif
-    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
     <script>document.documentElement.classList.add('js');</script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => 'InvestAI', 'url' => url('/'), 'logo' => url('/images/investai-logo.png'), 'description' => 'AI-assisted investment research focused on personal goals, transparent reasoning and risk awareness.'], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>

@@ -36,6 +36,13 @@ class ConsultancySiteTest extends TestCase
         $response->assertOk();
         $response->assertSee('Invest smarter with AI');
         $response->assertSee('Investment research that starts with you.');
+        $response->assertSee('Explore clearer investment decisions with AI-assisted research. Understand goals, risk, fees and long-term scenarios in pounds.');
+        $response->assertSee('<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">', false);
+        $response->assertSee('<meta name="twitter:description"', false);
+
+        foreach (['favicon.ico', 'favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png', 'android-chrome-192x192.png', 'android-chrome-512x512.png', 'site.webmanifest'] as $asset) {
+            $this->assertFileExists(public_path($asset));
+        }
 
         foreach (['services', 'ai-tools', 'about'] as $slug) {
             $response->assertSee(route('pages.show', $slug), false);
