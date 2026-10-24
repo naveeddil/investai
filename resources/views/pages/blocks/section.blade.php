@@ -93,8 +93,11 @@
             <div class="scroll-reveal grid max-w-3xl gap-5"><p class="eyebrow">{{ $data['eyebrow'] ?? 'Our method' }}</p><h2 class="section-title font-semibold">{{ $data['heading'] ?? '' }}</h2>@if (! empty($data['intro']))<p class="site-muted text-lg leading-8">{{ $data['intro'] }}</p>@endif</div>
             <ol class="grid gap-0 {{ $columnClass(count($data['steps'] ?? [])) }}">
                 @foreach ($data['steps'] ?? [] as $index => $step)
-                    <li class="scroll-reveal site-line grid gap-8 border-l py-3 pl-6 pr-8 md:min-h-72">
+                    <li class="scroll-reveal site-line grid gap-8 border-l py-3 pl-6 pr-8 md:min-h-72 {{ empty($step['image']) ? '' : 'content-start' }}">
                         <span class="site-accent text-sm">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</span>
+                        @if (! empty($step['image']))
+                            <figure class="aspect-[4/3] overflow-hidden rounded-2xl"><img class="image-wash size-full object-cover" src="{{ $step['image'] }}" alt="{{ $step['image_alt'] ?? '' }}" loading="lazy"></figure>
+                        @endif
                         <div class="grid content-end gap-3"><h3 class="text-xl font-semibold">{{ $step['heading'] ?? '' }}</h3><p class="site-muted leading-7">{{ $step['text'] ?? '' }}</p></div>
                     </li>
                 @endforeach

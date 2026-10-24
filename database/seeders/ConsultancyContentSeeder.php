@@ -372,9 +372,9 @@ class ConsultancyContentSeeder extends Seeder
                 'blocks' => [
                     ['type' => 'consultation_form', 'heading' => 'Let’s find the right conversation.', 'text' => 'Share the topic you would like to discuss and your preferred way to be contacted. This is an introductory conversation about business and analytics consulting — not personalised investment advice.', 'background' => 'light'],
                     ['type' => 'process', 'eyebrow' => 'What to expect', 'heading' => 'From request to recommendation.', 'steps' => [
-                        ['heading' => 'Request', 'text' => 'Tell us the topic and how and when to reach you.'],
-                        ['heading' => 'Conversation', 'text' => 'A short, no-obligation call to understand your situation.'],
-                        ['heading' => 'Proposal', 'text' => 'If appropriate, a written proposal with scope, deliverables and fees.'],
+                        ['heading' => 'Request', 'text' => 'Tell us the topic and how and when to reach you.', 'image' => '/images/editorial/request-desk.jpg', 'image_alt' => 'Open notebook, phone and laptop on a desk'],
+                        ['heading' => 'Conversation', 'text' => 'A short, no-obligation call to understand your situation.', 'image' => '/images/editorial/conversation-meeting.jpg', 'image_alt' => 'Two people talking across a table with notes and a tablet'],
+                        ['heading' => 'Proposal', 'text' => 'If appropriate, a written proposal with scope, deliverables and fees.', 'image' => '/images/editorial/proposal-writing.jpg', 'image_alt' => 'Fountain pen writing on lined paper'],
                     ], 'background' => 'dark'],
                 ],
             ],

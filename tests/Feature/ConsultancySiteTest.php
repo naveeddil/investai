@@ -132,6 +132,33 @@ class ConsultancySiteTest extends TestCase
         $this->get('/consultation?topic=platform')->assertSee('<option value="platform" selected>', false);
     }
 
+    public function test_the_consultation_steps_show_their_pictures(): void
+    {
+        $response = $this->get('/consultation')->assertOk();
+
+        foreach (['request-desk', 'conversation-meeting', 'proposal-writing'] as $image) {
+            $response->assertSee("/images/editorial/{$image}.jpg", false);
+            $this->assertFileExists(public_path("images/editorial/{$image}.jpg"));
+        }
+    }
+
+    public function test_the_step_pictures_migration_adds_images_without_the_seeder(): void
+    {
+        $page = Page::query()->where('slug', 'consultation')->firstOrFail();
+        $page->update(['blocks' => collect($page->blocks)->map(function (array $block): array {
+            foreach ($block['data']['steps'] ?? [] as $index => $step) {
+                unset($block['data']['steps'][$index]['image'], $block['data']['steps'][$index]['image_alt']);
+            }
+
+            return $block;
+        })->all()]);
+        $this->get('/consultation')->assertDontSee('/images/editorial/request-desk.jpg', false);
+
+        (require database_path('migrations/2026_10_24_150000_add_images_to_consultation_process_steps.php'))->up();
+
+        $this->get('/consultation')->assertSee('/images/editorial/request-desk.jpg', false);
+    }
+
     public function test_consulting_enquiries_are_accepted_by_both_forms(): void
     {
         $this->post('/consultation', [

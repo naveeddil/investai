@@ -145,6 +145,8 @@ class PageForm
                         Repeater::make('steps')->schema([
                             TextInput::make('heading')->required()->maxLength(120),
                             Textarea::make('text')->required()->rows(3),
+                            TextInput::make('image')->label('Image path (optional)')->placeholder('/images/editorial/example.jpg')->maxLength(255),
+                            TextInput::make('image_alt')->label('Image alternative text')->maxLength(180),
                         ])->minItems(2)->maxItems(5)->columns(2),
                         self::backgroundSelect(),
                     ]),
