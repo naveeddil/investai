@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\Page;
 use Database\Seeders\ConsultancyContentSeeder;
 use Database\Seeders\CoreContentSeeder;
+use Database\Seeders\ProductWebsiteSeeder;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -17,35 +18,33 @@ class ConsultancySiteTest extends TestCase
     /**
      * @var list<string>
      */
-    private const CONSULTANCY_SLUGS = [
-        'services', 'business-strategy', 'data-analytics', 'ai-advisory', 'financial-analytics',
-        'about', 'industries', 'approach', 'engagement-models', 'contact', 'consultation',
-        'platform', 'ai-tools', 'faq', 'confidentiality',
+    private const PRODUCT_SLUGS = [
+        'about', 'approach', 'contact', 'consultation', 'platform', 'ai-tools', 'faq', 'confidentiality',
     ];
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->seed([CoreContentSeeder::class, ConsultancyContentSeeder::class]);
+        $this->seed([CoreContentSeeder::class, ConsultancyContentSeeder::class, ProductWebsiteSeeder::class]);
     }
 
-    public function test_the_home_page_presents_the_consultancy_and_links_every_service_line(): void
+    public function test_the_home_page_presents_the_product_and_links_the_core_journey(): void
     {
         $response = $this->get('/');
 
         $response->assertOk();
-        $response->assertSee('Business &amp; analytics consultancy', false);
-        $response->assertSee('Decisions you can defend. Analytics you can trust.');
+        $response->assertSee('Invest smarter with AI');
+        $response->assertSee('Investment research that starts with you.');
 
-        foreach (['business-strategy', 'data-analytics', 'ai-advisory', 'financial-analytics'] as $slug) {
+        foreach (['platform', 'ai-tools', 'about'] as $slug) {
             $response->assertSee(route('pages.show', $slug), false);
         }
     }
 
-    public function test_every_consultancy_page_is_published_and_renders(): void
+    public function test_every_core_product_page_is_published_and_renders(): void
     {
-        foreach (self::CONSULTANCY_SLUGS as $slug) {
+        foreach (self::PRODUCT_SLUGS as $slug) {
             $this->get('/'.$slug)->assertOk();
         }
     }
@@ -64,9 +63,9 @@ class ConsultancySiteTest extends TestCase
         $response = $this->get('/platform');
 
         $response->assertOk();
-        $response->assertSee('the platform is not yet available', false);
+        $response->assertSee('Product in development');
         $response->assertSee(route('waitlist.store'), false);
-        $response->assertSee('Capital is at risk');
+        $response->assertSee('before any regulated UK service is offered');
     }
 
     public function test_confidentiality_is_covered_on_its_own_page_and_linked_from_home_and_footer(): void
@@ -76,17 +75,18 @@ class ConsultancySiteTest extends TestCase
             ->assertSee('Confidentiality terms first')
             ->assertSee('Please keep sensitive details out of web forms.');
 
-        $this->get('/')->assertSee('Confidentiality comes first.')->assertSee(route('pages.show', 'confidentiality'), false);
+        $this->get('/')->assertSee(route('pages.show', 'confidentiality'), false);
     }
 
-    public function test_the_ai_tools_page_renders_both_interactive_tools(): void
+    public function test_the_ai_tools_page_renders_both_investment_tools_in_pounds(): void
     {
         $response = $this->get('/ai-tools');
 
         $response->assertOk();
-        $response->assertSee('data-readiness', false);
-        $response->assertSee('data-estimator', false);
-        $response->assertSee('Analytics and AI readiness check');
+        $response->assertSee('data-risk', false);
+        $response->assertSee('data-investment-calculator', false);
+        $response->assertSee('Investment growth &amp; fee calculator', false);
+        $response->assertSee('Starting amount (£)');
     }
 
     public function test_faq_pages_include_structured_data(): void
@@ -95,17 +95,13 @@ class ConsultancySiteTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('"@type":"FAQPage"', false);
-        $response->assertSee('What kinds of organisations do you work with?');
+        $response->assertSee('Is the InvestAI platform live?');
     }
 
-    public function test_the_header_dropdown_and_footer_link_to_the_service_pages(): void
+    public function test_legacy_service_pages_redirect_to_the_consolidated_product_pages(): void
     {
-        $response = $this->get('/services');
-
-        $response->assertOk();
-        $response->assertSee('aria-label="Footer navigation"', false);
-        $response->assertSee('Financial &amp; Investment Analytics', false);
-        $response->assertSee('aria-current="page"', false);
+        $this->get('/services')->assertRedirect('/platform');
+        $this->get('/financial-analytics')->assertRedirect('/ai-tools');
     }
 
     public function test_the_home_page_shows_only_published_insights(): void
@@ -180,7 +176,7 @@ class ConsultancySiteTest extends TestCase
 
         $response->assertOk();
         $response->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
-        $response->assertSee(route('pages.show', 'services'), false);
+        $response->assertSee(route('pages.show', 'platform'), false);
         $response->assertDontSee('secret-draft');
     }
 }

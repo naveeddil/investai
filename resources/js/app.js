@@ -204,6 +204,44 @@ if (estimatorRoot) {
 
 const riskRoot = document.querySelector('[data-risk]');
 
+const investmentCalculator = document.querySelector('[data-investment-calculator]');
+
+if (investmentCalculator) {
+    const input = (name) => investmentCalculator.querySelector(`[data-investment-input="${name}"]`);
+    const output = (name) => investmentCalculator.querySelector(`[data-investment-output="${name}"]`);
+    const currency = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 });
+    const futureValue = (initial, monthly, years, annualRate) => {
+        const months = years * 12;
+        const monthlyRate = annualRate / 12;
+        const initialValue = initial * ((1 + monthlyRate) ** months);
+        const contributions = monthlyRate === 0 ? monthly * months : monthly * ((((1 + monthlyRate) ** months) - 1) / monthlyRate);
+        return initialValue + contributions;
+    };
+    const calculate = () => {
+        const initial = Math.max(Number.parseFloat(input('initial').value) || 0, 0);
+        const monthly = Math.max(Number.parseFloat(input('monthly').value) || 0, 0);
+        const years = Number.parseInt(input('years').value, 10);
+        const annualReturn = Number.parseFloat(input('return').value) / 100;
+        const annualFee = Number.parseFloat(input('fee').value) / 100;
+        const gross = futureValue(initial, monthly, years, annualReturn);
+        const net = futureValue(initial, monthly, years, Math.max(annualReturn - annualFee, -0.99));
+        const contributed = initial + (monthly * years * 12);
+
+        output('years').textContent = `${years} ${years === 1 ? 'year' : 'years'}`;
+        output('years-label').textContent = `${years} ${years === 1 ? 'year' : 'years'}`;
+        output('return').textContent = `${(annualReturn * 100).toFixed(1)}%`;
+        output('fee').textContent = `${(annualFee * 100).toFixed(2)}%`;
+        output('net-value').textContent = currency.format(net);
+        output('contributed').textContent = currency.format(contributed);
+        output('growth').textContent = currency.format(net - contributed);
+        output('gross-value').textContent = currency.format(gross);
+        output('fee-impact').textContent = currency.format(Math.max(gross - net, 0));
+    };
+
+    investmentCalculator.addEventListener('input', calculate);
+    calculate();
+}
+
 if (riskRoot) {
     const config = JSON.parse(riskRoot.dataset.config);
     const classes = config.assumptions.classes;

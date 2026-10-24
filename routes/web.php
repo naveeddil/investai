@@ -28,6 +28,20 @@ Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/insights', [InsightController::class, 'index'])->name('insights.index');
 Route::get('/insights/{slug}', [InsightController::class, 'show'])->name('insights.show');
 
+foreach ([
+    'services' => '/platform',
+    'business-strategy' => '/platform',
+    'data-analytics' => '/platform',
+    'ai-advisory' => '/platform',
+    'financial-analytics' => '/ai-tools',
+    'industries' => '/about',
+    'engagement-models' => '/platform',
+    'case-studies' => '/insights',
+    'technology' => '/approach',
+] as $legacyPath => $destination) {
+    Route::permanentRedirect('/'.$legacyPath, $destination);
+}
+
 Route::post('/consultation', ConsultationController::class)
     ->middleware('throttle:public-forms')
     ->name('consultation.store');

@@ -6,7 +6,7 @@
         'surface' => 'site-surface',
         default => '',
     };
-    $partialTypes = ['service_grid', 'metrics', 'comparison', 'timeline', 'faq', 'latest_insights', 'readiness_assessment', 'savings_estimator', 'risk_calculator', 'tool_stack', 'callout', 'waitlist_form'];
+    $partialTypes = ['service_grid', 'metrics', 'comparison', 'timeline', 'faq', 'latest_insights', 'readiness_assessment', 'savings_estimator', 'risk_calculator', 'investment_calculator', 'tool_stack', 'callout', 'waitlist_form'];
     $columnClass = fn (int $count): string => match (true) {
         $count === 2 => 'md:grid-cols-2',
         $count === 4 => 'md:grid-cols-2 lg:grid-cols-4',

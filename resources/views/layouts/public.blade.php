@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @php
         $pageTitle = $metaTitle ?? (($page->seo_title ?? null) ?: (($page->title ?? 'InvestAI').' | InvestAI'));
-        $pageDescription = $metaDescription ?? (($page->seo_description ?? null) ?: ($page->description ?? 'Business and analytics consultancy: strategy, data, AI and financial analytics designed around clear decisions.'));
+        $pageDescription = $metaDescription ?? (($page->seo_description ?? null) ?: ($page->description ?? 'AI-assisted investment research designed around personal goals, transparent reasoning and risk awareness.'));
     @endphp
     <title>{{ $pageTitle }}</title>
     <meta name="description" content="{{ $pageDescription }}">
@@ -22,7 +22,7 @@
     <link rel="icon" href="/favicon.ico">
     <script>document.documentElement.classList.add('js');</script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => 'InvestAI', 'url' => url('/'), 'logo' => url('/images/investai-logo.png'), 'description' => 'Business and analytics consultancy combining strategy, data, AI and financial analytics.'], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
+    <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => 'InvestAI', 'url' => url('/'), 'logo' => url('/images/investai-logo.png'), 'description' => 'AI-assisted investment research platform in development, focused on personal goals, transparent reasoning and risk awareness.'], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 </head>
 <body class="site-shell min-h-screen antialiased">
     @php
@@ -32,7 +32,7 @@
         $mobileActive = 'border-[var(--line)] bg-[var(--canvas-soft)] font-semibold text-[var(--accent)]';
         $currentSlug = request()->routeIs('pages.show') ? request()->route('slug') : null;
 
-        $href = fn (array $item): string => isset($item['route']) ? route($item['route']) : route('pages.show', $item['slug']);
+        $href = fn (array $item): string => (isset($item['route']) ? route($item['route']) : route('pages.show', $item['slug'])).(isset($item['fragment']) ? '#'.$item['fragment'] : '');
         $isCurrent = fn (array $item): bool => isset($item['route'])
             ? request()->routeIs('insights.*')
             : $currentSlug === $item['slug'];
@@ -78,7 +78,7 @@
                         <a @if($isCurrent($item)) aria-current="page" @endif class="{{ $navLink }} {{ $isCurrent($item) ? $navActive : '' }}" href="{{ $href($item) }}">{{ $item['label'] }}</a>
                     @endif
                 @endforeach
-                <a @if($primaryActive) aria-current="page" @endif class="site-button rounded-full px-5 py-2.5 font-semibold transition {{ $primaryActive ? 'ring-2 ring-[var(--ink)] ring-offset-2 ring-offset-[var(--canvas)]' : '' }}" href="{{ route('pages.show', $primaryAction['slug']) }}">{{ $primaryAction['label'] }}</a>
+                <a @if($primaryActive) aria-current="page" @endif class="site-button rounded-full px-5 py-2.5 font-semibold transition {{ $primaryActive ? 'ring-2 ring-[var(--ink)] ring-offset-2 ring-offset-[var(--canvas)]' : '' }}" href="{{ $href($primaryAction) }}">{{ $primaryAction['label'] }}</a>
             </nav>
 
             <details class="relative lg:hidden">
@@ -90,7 +90,7 @@
                             <a @if($isCurrent($child)) aria-current="page" @endif class="{{ $mobileLink }} site-muted ml-4 py-2 text-sm {{ $isCurrent($child) ? $mobileActive : '' }}" href="{{ $href($child) }}">{{ $child['label'] }}</a>
                         @endforeach
                     @endforeach
-                    <a @if($primaryActive) aria-current="page" @endif class="site-button mt-2 rounded-xl px-4 py-3 text-center font-semibold {{ $primaryActive ? 'ring-2 ring-[var(--ink)]' : '' }}" href="{{ route('pages.show', $primaryAction['slug']) }}">{{ $primaryAction['label'] }}</a>
+                    <a @if($primaryActive) aria-current="page" @endif class="site-button mt-2 rounded-xl px-4 py-3 text-center font-semibold {{ $primaryActive ? 'ring-2 ring-[var(--ink)]' : '' }}" href="{{ $href($primaryAction) }}">{{ $primaryAction['label'] }}</a>
                 </nav>
             </details>
         </div>
@@ -102,8 +102,8 @@
         <div class="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-[1.3fr_2fr] lg:px-8">
             <div class="grid content-start gap-5">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 text-xl font-semibold tracking-[-0.04em]"><img class="size-10 rounded-full bg-white object-contain p-1" src="/images/investai-logo.png" alt=""><span>Invest<span class="site-accent">AI</span></span></a>
-                <p class="site-muted max-w-sm leading-7">Business and analytics consultancy for organisations that want clearer decisions — through strategy, trusted data, governed AI and financial analytics.</p>
-                <div><a class="site-button inline-flex rounded-full px-5 py-2.5 text-sm font-semibold" href="{{ route('pages.show', $primaryAction['slug']) }}">{{ $primaryAction['label'] }}</a></div>
+                <p class="site-muted max-w-sm leading-7">AI-assisted investment research designed to make goals, risk, evidence and fees easier to understand.</p>
+                <div><a class="site-button inline-flex rounded-full px-5 py-2.5 text-sm font-semibold" href="{{ $href($primaryAction) }}">{{ $primaryAction['label'] }}</a></div>
             </div>
             <nav aria-label="Footer navigation" class="grid grid-cols-2 gap-8 sm:grid-cols-3">
                 @foreach (config('site.footer') as $heading => $links)
