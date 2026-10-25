@@ -124,7 +124,7 @@
             <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 @forelse ($teamMembers ?? [] as $member)
                     <article class="site-surface site-line overflow-hidden rounded-3xl border">
-                        @if ($member->photo)<img class="aspect-[4/3] w-full object-cover" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($member->photo) }}" alt="{{ $member->photo_alt ?: $member->name }}" loading="lazy">@endif
+                        @if ($member->photo)<img class="aspect-[40/21] w-full object-cover object-top" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($member->photo) }}" alt="{{ $member->photo_alt ?: $member->name }}" loading="lazy">@endif
                         <div class="grid gap-3 p-7"><h3 class="text-xl font-semibold">{{ $member->name }}</h3><p class="site-accent text-sm">{{ $member->role }}</p>@if($member->bio)<details class="team-profile"><summary><span class="team-bio-preview site-muted leading-7">{{ $member->bio }}</span><span class="team-more site-accent mt-2 block text-sm font-semibold">Read full profile</span><span class="team-less site-accent text-sm font-semibold">Hide full profile</span></summary><p class="site-muted mt-4 leading-7">{{ $member->bio }}</p></details>@endif @if ($member->linkedin_url)<a class="font-semibold" href="{{ $member->linkedin_url }}" rel="noopener noreferrer">LinkedIn ↗</a>@endif</div>
                     </article>
                 @empty
