@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="{{ $siteTheme ?? 'ivory' }}">
+<html lang="en" data-theme="{{ $siteTheme ?? $settingsTheme ?? 'ivory' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @php
         $pageTitle = $metaTitle ?? (($page->seo_title ?? null) ?: (($page->title ?? 'InvestAI').' | InvestAI'));
-        $pageDescription = $metaDescription ?? (($page->seo_description ?? null) ?: ($page->description ?? 'Make clearer investment decisions with AI-assisted research. Explore practical tools, risk insights and evidence-led guidance.'));
+        $pageDescription = $metaDescription ?? (($page->seo_description ?? null) ?: ($page->description ?? $defaultSeoDescription ?? 'Make clearer investment decisions with AI-assisted research.'));
         $socialTitle = ($page->open_graph_title ?? null) ?: $pageTitle;
         $socialDescription = ($page->open_graph_description ?? null) ?: $pageDescription;
         $socialImage = url('/images/investai-logo.png');
@@ -39,9 +39,11 @@
     <meta name="twitter:image" content="{{ $socialImage }}">
     <meta name="twitter:image:alt" content="InvestAI — invest with intelligence">
     @if (($page->canonical_url ?? null))<link rel="canonical" href="{{ $page->canonical_url }}">@endif
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" href="{{ $brandFavicon ?? '/favicon.ico' }}" sizes="any">
+    @if (($brandFavicon ?? '/favicon.ico') === '/favicon.ico')
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    @endif
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
     <script>document.documentElement.classList.add('js');</script>
@@ -75,15 +77,18 @@
         };
 
         $primaryAction = config('site.primary_action');
+        $primaryAction['label'] = \App\Models\SiteSetting::read('menu.cta.label', $primaryAction['label']);
+        $menuKeys = ['services' => 'services', 'approach' => 'approach', 'ai-tools' => 'tools', 'about' => 'about'];
+        $navigation = collect(config('site.navigation'))->filter(function ($item) use ($menuKeys) { $key = $item['route'] ?? ($menuKeys[$item['slug'] ?? ''] ?? null); $key = $key === 'insights.index' ? 'blog' : $key; return $key ? \App\Models\SiteSetting::read('menu.show.'.$key, true) : true; })->map(function ($item) use ($menuKeys) { $key = $item['route'] ?? ($menuKeys[$item['slug'] ?? ''] ?? null); $key = $key === 'insights.index' ? 'blog' : $key; if ($key) $item['label'] = \App\Models\SiteSetting::read('menu.'.$key.'.label', $item['label']); return $item; })->all();
         $primaryActive = in_array($currentSlug, ['contact', 'consultation'], true);
     @endphp
     <a href="#content" class="sr-only z-50 bg-white px-4 py-3 text-slate-950 focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Skip to content</a>
     <header class="site-header sticky top-0 z-40 border-b backdrop-blur-xl">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-3.5 lg:px-8">
-            <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif class="flex items-center gap-3 rounded-full text-xl font-semibold tracking-[-0.04em] {{ request()->routeIs('home') ? 'ring-2 ring-[var(--accent)] ring-offset-4 ring-offset-[var(--canvas)]' : '' }}"><img class="size-10 rounded-full bg-white object-contain p-1" src="/images/investai-logo.png" alt=""><span>Invest<span class="site-accent">AI</span></span></a>
+            <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif class="flex items-center gap-3 rounded-full text-xl font-semibold tracking-[-0.04em] {{ request()->routeIs('home') ? 'ring-2 ring-[var(--accent)] ring-offset-4 ring-offset-[var(--canvas)]' : '' }}"><img class="size-10 rounded-full bg-white object-contain p-1" src="{{ $brandLogo ?? '/images/investai-logo.png' }}" alt=""><span>{{ $brandName ?? 'InvestAI' }}</span></a>
 
             <nav aria-label="Primary navigation" class="hidden items-center gap-6 text-sm lg:flex">
-                @foreach (config('site.navigation') as $item)
+                @foreach ($navigation as $item)
                     @if (! empty($item['children']))
                         <div class="nav-group relative">
                             <a @if($isCurrent($item)) aria-current="page" @endif aria-haspopup="true" class="{{ $navLink }} {{ $isActive($item) ? $navActive : '' }}" href="{{ $href($item) }}">{{ $item['label'] }}<svg class="size-3.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
@@ -108,7 +113,7 @@
             <details class="relative lg:hidden">
                 <summary class="site-outline cursor-pointer list-none rounded-full border px-4 py-2 text-sm">Menu</summary>
                 <nav aria-label="Mobile navigation" class="site-surface site-line absolute right-0 top-12 grid max-h-[80vh] w-72 gap-1 overflow-y-auto rounded-2xl border p-3 shadow-2xl">
-                    @foreach (config('site.navigation') as $item)
+                    @foreach ($navigation as $item)
                         <a @if($isCurrent($item)) aria-current="page" @endif class="{{ $mobileLink }} {{ $isCurrent($item) ? $mobileActive : '' }}" href="{{ $href($item) }}">{{ $item['label'] }}</a>
                         @foreach ($item['children'] ?? [] as $child)
                             <a @if($isCurrent($child)) aria-current="page" @endif class="{{ $mobileLink }} site-muted ml-4 py-2 text-sm {{ $isCurrent($child) ? $mobileActive : '' }}" href="{{ $href($child) }}">{{ $child['label'] }}</a>
@@ -126,8 +131,8 @@
         <div class="mx-auto max-w-7xl px-5 pt-16 lg:px-8"><x-newsletter-form /></div>
         <div class="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-[1.3fr_2fr] lg:px-8">
             <div class="grid content-start gap-5">
-                <a href="{{ route('home') }}" class="flex items-center gap-3 text-xl font-semibold tracking-[-0.04em]"><img class="size-10 rounded-full bg-white object-contain p-1" src="/images/investai-logo.png" alt=""><span>Invest<span class="site-accent">AI</span></span></a>
-                <p class="site-muted max-w-sm leading-7">AI-assisted investment research designed to make goals, risk, evidence and fees easier to understand.</p>
+                <a href="{{ route('home') }}" class="flex items-center gap-3 text-xl font-semibold tracking-[-0.04em]"><img class="size-10 rounded-full bg-white object-contain p-1" src="{{ $brandLogo ?? '/images/investai-logo.png' }}" alt=""><span>{{ $brandName ?? 'InvestAI' }}</span></a>
+                <p class="site-muted max-w-sm leading-7">{{ $footerDescription ?? 'AI-assisted investment research designed to make goals, risk, evidence and fees easier to understand.' }}</p>
                 <div><a class="site-button inline-flex rounded-full px-5 py-2.5 text-sm font-semibold" href="{{ $href($primaryAction) }}">{{ $primaryAction['label'] }}</a></div>
             </div>
             <nav aria-label="Footer navigation" class="grid grid-cols-2 gap-8 sm:grid-cols-3">

@@ -30,6 +30,6 @@ class NewsletterSubscriptionTest extends TestCase
     public function test_about_page_renders_visible_team_members(): void
     {
         TeamMember::factory()->create(['name' => 'Visible Colleague', 'is_visible' => true]);
-        $this->get('/about')->assertOk()->assertSee('Meet the team.')->assertSee('Visible Colleague');
+        $this->get('/about')->assertOk()->assertSee('Meet the team.')->assertSee('Visible Colleague')->assertSee('Read full profile');
     }
 }

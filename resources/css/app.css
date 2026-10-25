@@ -56,6 +56,12 @@
     .faq-item summary::-webkit-details-marker { display: none; }
     .faq-item[open] .faq-chevron { transform: rotate(45deg); }
     .faq-chevron { transition: transform .2s ease; }
+    .team-profile summary { cursor: pointer; list-style: none; }
+    .team-profile summary::-webkit-details-marker { display: none; }
+    .team-bio-preview { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+    .team-less { display: none; }
+    .team-profile[open] .team-bio-preview, .team-profile[open] .team-more { display: none; }
+    .team-profile[open] .team-less { display: block; }
     .option-card input:checked + span { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--ink); }
     .option-card input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
     input[type='range'] { accent-color: var(--accent); }

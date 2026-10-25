@@ -48,4 +48,13 @@ class AdminAccessTest extends TestCase
 
         $this->actingAs($user)->get('/admin/pages/create')->assertOk();
     }
+
+    public function test_administrator_can_render_website_settings(): void
+    {
+        $this->actingAs(User::factory()->withRole(UserRole::Admin)->create())
+            ->get('/admin/website-settings')
+            ->assertOk()
+            ->assertSee('Brand and SEO')
+            ->assertSee('Email delivery');
+    }
 }
