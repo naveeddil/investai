@@ -181,7 +181,6 @@ if ($state['phase'] === 'artisan') {
         $commands[] = ['db:seed', ['--class' => 'ConsultancyContentSeeder', '--force' => true]];
     }
     $commands[] = ['optimize:clear', []];
-    $commands[] = ['filament:optimize-clear', []];
 
     foreach ($commands as [$command, $arguments]) {
         echo "\n$ php artisan {$command}\n";
